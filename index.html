@@ -4,6 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Map</title>
+  <meta name="description" content="スプレッドシートから、今行ける近くのお店を表示する自分専用のマップです。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="My Map">
+  <meta property="og:description" content="スプレッドシートから、今行ける近くのお店を表示する自分専用のマップです。">
+  <meta property="og:image" content="./img/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="My Map">
+  <meta name="twitter:description" content="スプレッドシートから、今行ける近くのお店を表示する自分専用のマップです。">
+  <meta name="twitter:image" content="./img/og-image.png">
+  <link rel="icon" href="./img/favicon.svg" type="image/svg+xml">
   <style>
     :root {
       --ink: #20211f;
@@ -357,23 +367,56 @@
       line-height: 1.55;
     }
 
+    .rating-stars {
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
     .settings {
       border-top: 1px solid var(--line);
       background: rgba(255, 255, 251, 0.9);
     }
 
+    .template-guide {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 18px 18px 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) max-content;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .template-guide p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 920px;
+    }
+
     .settings-inner {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 16px 18px 20px;
+      padding: 14px 18px 20px;
       display: grid;
-      grid-template-columns: minmax(260px, 1fr) 110px auto auto;
-      gap: 10px;
+      grid-template-columns: minmax(360px, 1fr) 120px max-content;
+      gap: 12px;
       align-items: end;
     }
 
     .settings .field {
       min-width: 0;
+    }
+
+    .settings-actions {
+      display: flex;
+      gap: 10px;
+      align-items: end;
+      justify-content: flex-end;
+      white-space: nowrap;
     }
 
     .status {
@@ -650,7 +693,12 @@
       }
 
       .settings-inner {
-        grid-template-columns: 1fr 110px;
+        grid-template-columns: minmax(0, 1fr) 120px;
+      }
+
+      .settings-actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
       }
     }
 
@@ -661,6 +709,7 @@
 
       .topbar-inner,
       .main,
+      .template-guide,
       .settings-inner,
       .status {
         padding-left: 12px;
@@ -694,6 +743,16 @@
       .settings-inner {
         grid-template-columns: 1fr;
       }
+
+      .template-guide {
+        grid-template-columns: 1fr;
+      }
+
+      .settings-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -722,6 +781,16 @@
           <div class="field">
             <label for="timeFilter">判定時刻</label>
             <input id="timeFilter" type="time">
+          </div>
+
+          <div class="field">
+            <label for="radiusFilter">距離</label>
+            <select id="radiusFilter">
+              <option value="3">3km以内</option>
+              <option value="5">5km以内</option>
+              <option value="10" selected>10km以内</option>
+              <option value="">すべて</option>
+            </select>
           </div>
 
           <label class="toggle">
@@ -776,6 +845,13 @@
     </main>
 
     <footer class="settings">
+      <div class="template-guide">
+        <p>サンプルスプレッドシートをコピーし、公開設定にしたURLを貼ってください。公開設定にする必要がありますので、スプレッドシートに個人情報などは記載しないでください。</p>
+        <button id="copyTemplateButton" class="secondary-button" type="button">
+          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+          サンプルスプシをコピー
+        </button>
+      </div>
       <div class="settings-inner">
         <div class="field">
           <label for="sheetUrlInput">公開スプレッドシートURL</label>
@@ -785,14 +861,16 @@
           <label for="gidInput">シートID</label>
           <input id="gidInput" type="text" inputmode="numeric" placeholder="通常は0">
         </div>
-        <button id="saveSettingsButton" class="primary-button" type="button">
-          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
-          保存して読み込み
-        </button>
-        <button id="openSheetButton" class="secondary-button" type="button">
-          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>
-          スプシを開く
-        </button>
+        <div class="settings-actions">
+          <button id="saveSettingsButton" class="primary-button" type="button">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
+            保存して読み込み
+          </button>
+          <button id="openSheetButton" class="secondary-button" type="button">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>
+            スプシを開く
+          </button>
+        </div>
       </div>
       <div id="status" class="status">スプレッドシートは公開閲覧できる状態にしてください。1行目の列名は要件定義の列名に合わせます。</div>
     </footer>
@@ -801,8 +879,10 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
     const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1Nom2VVA60XmEZ3jXH9psGn3X_MX6nX-NiZXpOtazSKE/edit?gid=0#gid=0";
+    const TEMPLATE_SHEET_COPY_URL = "https://docs.google.com/spreadsheets/d/1Nom2VVA60XmEZ3jXH9psGn3X_MX6nX-NiZXpOtazSKE/copy";
     const STORAGE_KEY = "personal-food-map-settings";
     const DEFAULT_CENTER = { lat: 35.681236, lng: 139.767125 };
+    const DEFAULT_RADIUS_KM = 10;
     const WEEK_KEYS = ["日", "月", "火", "水", "木", "金", "土"];
 
     const state = {
@@ -823,6 +903,7 @@
       genreFilter: document.getElementById("genreFilter"),
       dateFilter: document.getElementById("dateFilter"),
       timeFilter: document.getElementById("timeFilter"),
+      radiusFilter: document.getElementById("radiusFilter"),
       openOnlyFilter: document.getElementById("openOnlyFilter"),
       includeVisitedFilter: document.getElementById("includeVisitedFilter"),
       locationSearchInput: document.getElementById("locationSearchInput"),
@@ -834,6 +915,7 @@
       placeList: document.getElementById("placeList"),
       sheetUrlInput: document.getElementById("sheetUrlInput"),
       gidInput: document.getElementById("gidInput"),
+      copyTemplateButton: document.getElementById("copyTemplateButton"),
       saveSettingsButton: document.getElementById("saveSettingsButton"),
       openSheetButton: document.getElementById("openSheetButton"),
       status: document.getElementById("status")
@@ -859,6 +941,7 @@
       elements.genreFilter.addEventListener("change", applyFilters);
       elements.dateFilter.addEventListener("change", applyFilters);
       elements.timeFilter.addEventListener("change", applyFilters);
+      elements.radiusFilter.addEventListener("change", applyFilters);
       elements.openOnlyFilter.addEventListener("change", applyFilters);
       elements.includeVisitedFilter.addEventListener("change", applyFilters);
       elements.locationSearchButton.addEventListener("click", searchLocation);
@@ -870,6 +953,7 @@
       });
       elements.locateButton.addEventListener("click", locateUser);
       elements.reloadButton.addEventListener("click", loadSheetData);
+      elements.copyTemplateButton.addEventListener("click", openTemplateCopy);
       elements.saveSettingsButton.addEventListener("click", saveSettingsFromForm);
       elements.openSheetButton.addEventListener("click", openSheet);
     }
@@ -919,6 +1003,10 @@
       window.open(sheetUrl, "_blank", "noopener,noreferrer");
     }
 
+    function openTemplateCopy() {
+      window.open(TEMPLATE_SHEET_COPY_URL, "_blank", "noopener,noreferrer");
+    }
+
     async function startApp() {
       try {
         initMap();
@@ -940,7 +1028,9 @@
 
       state.map = L.map("map", {
         zoomControl: true,
-        attributionControl: true
+        attributionControl: true,
+        scrollWheelZoom: false,
+        touchZoom: true
       }).setView([DEFAULT_CENTER.lat, DEFAULT_CENTER.lng], 15);
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -1233,6 +1323,7 @@
       const openOnly = elements.openOnlyFilter.checked;
       const includeVisited = elements.includeVisitedFilter.checked;
       const time = elements.timeFilter.value || currentTimeString();
+      const radiusKm = selectedRadiusKm();
       const selectedDate = parseDateInput(elements.dateFilter.value);
       const selectedDayKey = WEEK_KEYS[selectedDate.getDay()];
 
@@ -1244,6 +1335,7 @@
           ...place,
           distanceKm: state.userPosition ? distanceKm(state.userPosition, place) : null
         }))
+        .filter((place) => radiusKm === null || place.distanceKm === null || place.distanceKm <= radiusKm)
         .sort((a, b) => {
           if (a.distanceKm === null && b.distanceKm === null) return a.name.localeCompare(b.name, "ja");
           if (a.distanceKm === null) return 1;
@@ -1255,8 +1347,21 @@
       renderPlaceList(filtered.slice(0, 5));
       elements.matchCount.textContent = `${filtered.length}件`;
       elements.summaryNote.textContent = state.userPosition
-        ? "近い順に最大5件を表示しています。"
+        ? `${state.centerLabel}から${radiusLabel(radiusKm)}を近い順に最大5件表示しています。`
         : "現在地がないため距離順ではなく店名順で表示しています。";
+    }
+
+    function selectedRadiusKm() {
+      const value = elements.radiusFilter.value;
+      if (!value) {
+        return null;
+      }
+      const radius = Number(value);
+      return Number.isFinite(radius) ? radius : DEFAULT_RADIUS_KM;
+    }
+
+    function radiusLabel(radiusKm) {
+      return radiusKm === null ? "全距離" : `${radiusKm}km以内`;
     }
 
     function isOpenAt(place, dayKey, time) {
@@ -1324,7 +1429,7 @@
           <p><strong>${escapeHtml(place.genre)}</strong> / ${escapeHtml(timeRange(place))}</p>
           ${place.address ? `<p>${escapeHtml(place.address)}</p>` : ""}
           ${place.memo ? `<p>${escapeHtml(place.memo)}</p>` : ""}
-          ${place.rating ? `<p>おすすめ度: ${escapeHtml(place.rating)}</p>` : ""}
+          <p>おすすめ度: <span class="rating-stars">${ratingStars(place.rating)}</span></p>
           <p>${place.visited ? "訪問済み" : "未訪問"}</p>
         </div>
       `;
@@ -1352,6 +1457,7 @@
             <span class="chip ${place.visited ? "visited" : ""}">${place.visited ? "訪問済み" : "未訪問"}</span>
           </div>
           <p class="place-time">${escapeHtml(timeRange(place))}</p>
+          <p class="place-memo">おすすめ度: <span class="rating-stars">${ratingStars(place.rating)}</span></p>
           ${place.memo ? `<p class="place-memo">${escapeHtml(place.memo)}</p>` : ""}
         </article>
       `).join("");
@@ -1376,6 +1482,11 @@
         return "営業時間未設定";
       }
       return `${place.openTime}-${place.closeTime}`;
+    }
+
+    function ratingStars(value) {
+      const rating = Math.max(0, Math.min(5, Math.round(Number(value) || 0)));
+      return `${"★".repeat(rating)}${"☆".repeat(5 - rating)}`;
     }
 
     function formatDistance(km) {
