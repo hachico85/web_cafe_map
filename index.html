@@ -92,12 +92,6 @@
       line-height: 1;
     }
 
-    .brand p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
     .filters {
       display: flex;
       flex-wrap: nowrap;
@@ -402,6 +396,10 @@
       background: rgba(255, 255, 251, 0.9);
     }
 
+    .is-hidden {
+      display: none !important;
+    }
+
     .template-guide {
       max-width: 1440px;
       margin: 0 auto;
@@ -423,9 +421,9 @@
     .settings-inner {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 14px 18px 20px;
+      padding: 12px 18px;
       display: grid;
-      grid-template-columns: minmax(360px, 1fr) 120px max-content;
+      grid-template-columns: 1fr;
       gap: 12px;
       align-items: end;
     }
@@ -445,7 +443,7 @@
     .status {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 0 18px 16px;
+      padding: 0 18px 12px;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.55;
@@ -726,12 +724,6 @@
       }
     }
 
-    @media (max-width: 1200px) {
-      .brand p {
-        display: none;
-      }
-    }
-
     @media (max-width: 680px) {
       .app {
         grid-template-rows: auto auto auto;
@@ -759,10 +751,6 @@
 
       .brand h1 {
         font-size: 24px;
-      }
-
-      .brand p {
-        display: none;
       }
 
       .filters {
@@ -852,7 +840,6 @@
       <div class="topbar-inner">
         <div class="brand">
           <h1>My Map</h1>
-          <p>今行ける近くのお店を、自分のスプレッドシートから表示します。</p>
         </div>
 
         <div class="filters" aria-label="絞り込み">
@@ -935,7 +922,7 @@
     </main>
 
     <footer class="settings">
-      <div class="template-guide">
+      <div class="template-guide is-hidden">
         <p>サンプルスプレッドシートをコピーし、公開設定にしたURLを貼ってください。公開設定にする必要がありますので、スプレッドシートに個人情報などは記載しないでください。</p>
         <button id="copyTemplateButton" class="secondary-button" type="button">
           <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
@@ -943,16 +930,16 @@
         </button>
       </div>
       <div class="settings-inner">
-        <div class="field">
+        <div class="field is-hidden">
           <label for="sheetUrlInput">公開スプレッドシートURL</label>
           <input id="sheetUrlInput" type="url" placeholder="https://docs.google.com/spreadsheets/d/...">
         </div>
-        <div class="field">
+        <div class="field is-hidden">
           <label for="gidInput">シートID</label>
           <input id="gidInput" type="text" inputmode="numeric" placeholder="通常は0">
         </div>
         <div class="settings-actions">
-          <button id="saveSettingsButton" class="primary-button" type="button">
+          <button id="saveSettingsButton" class="primary-button is-hidden" type="button">
             <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
             保存して読み込み
           </button>
@@ -962,7 +949,7 @@
           </button>
         </div>
       </div>
-      <div id="status" class="status">スプレッドシートは公開閲覧できる状態にしてください。1行目の列名は要件定義の列名に合わせます。</div>
+      <div id="status" class="status is-hidden">スプレッドシートは公開閲覧できる状態にしてください。1行目の列名は要件定義の列名に合わせます。</div>
     </footer>
   </div>
 
