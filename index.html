@@ -73,10 +73,10 @@
     .topbar-inner {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 14px 18px;
+      padding: 10px 18px;
       display: grid;
-      grid-template-columns: minmax(210px, 1fr) auto;
-      gap: 18px;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 14px;
       align-items: center;
     }
 
@@ -87,51 +87,73 @@
     .brand h1 {
       margin: 0;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(22px, 3vw, 34px);
+      font-size: clamp(22px, 2.4vw, 30px);
       font-weight: 700;
       line-height: 1;
     }
 
     .brand p {
-      margin: 6px 0 0;
+      margin: 4px 0 0;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .filters {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+      flex-wrap: nowrap;
+      gap: 8px;
       align-items: end;
       justify-content: flex-end;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .filters::-webkit-scrollbar {
+      display: none;
     }
 
     .field {
       display: grid;
-      gap: 5px;
-      min-width: 132px;
+      gap: 3px;
+      min-width: 104px;
+    }
+
+    .field.genre-field {
+      min-width: 112px;
+    }
+
+    .field.date-field {
+      min-width: 136px;
+    }
+
+    .field.time-field,
+    .field.radius-field {
+      min-width: 104px;
     }
 
     .field.location-search {
-      min-width: min(280px, 100%);
+      min-width: 170px;
     }
 
     .field label,
     .toggle span {
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
     }
 
     .field input,
     .field select {
-      height: 38px;
+      height: 34px;
       border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 0 10px;
+      border-radius: 999px;
+      padding: 0 11px;
       color: var(--ink);
       background: #fff;
       outline: none;
+      font-size: 14px;
     }
 
     .field input:focus,
@@ -141,31 +163,32 @@
     }
 
     .toggle {
-      min-height: 38px;
+      min-height: 34px;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 0 10px;
+      gap: 7px;
+      padding: 0 11px;
       border: 1px solid var(--line);
-      border-radius: var(--radius);
+      border-radius: 999px;
       background: #fff;
       cursor: pointer;
       user-select: none;
+      font-size: 14px;
     }
 
     .toggle input {
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       accent-color: var(--leaf);
     }
 
     .icon-button,
     .primary-button,
     .secondary-button {
-      height: 38px;
+      height: 34px;
       border: 1px solid transparent;
-      border-radius: var(--radius);
-      padding: 0 13px;
+      border-radius: 999px;
+      padding: 0 12px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -194,7 +217,7 @@
     }
 
     .icon-button {
-      width: 38px;
+      width: 34px;
       padding: 0;
       border-color: var(--line);
       background: #fff;
@@ -660,8 +683,8 @@
     }
 
     .svg-icon {
-      width: 18px;
-      height: 18px;
+      width: 17px;
+      height: 17px;
       display: block;
       fill: none;
       stroke: currentColor;
@@ -673,6 +696,7 @@
     @media (max-width: 1050px) {
       .topbar-inner {
         grid-template-columns: 1fr;
+        gap: 10px;
       }
 
       .filters {
@@ -702,6 +726,12 @@
       }
     }
 
+    @media (max-width: 1200px) {
+      .brand p {
+        display: none;
+      }
+    }
+
     @media (max-width: 680px) {
       .app {
         grid-template-rows: auto auto auto;
@@ -716,14 +746,74 @@
         padding-right: 12px;
       }
 
+      .topbar-inner {
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+      }
+
+      .brand h1 {
+        font-size: 24px;
+      }
+
+      .brand p {
+        display: none;
+      }
+
       .filters {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        align-items: stretch;
+        align-items: end;
+        gap: 7px;
+        margin: 0 -12px;
+        padding: 0 12px 4px;
       }
 
       .field,
+      .toggle {
+        flex: 0 0 auto;
+      }
+
+      .field label {
+        font-size: 10px;
+      }
+
+      .field input,
+      .field select,
       .toggle,
+      .icon-button {
+        height: 32px;
+        min-height: 32px;
+        font-size: 13px;
+      }
+
+      .icon-button {
+        width: 32px;
+      }
+
+      .field.genre-field {
+        min-width: 104px;
+      }
+
+      .field.date-field {
+        min-width: 132px;
+      }
+
+      .field.time-field {
+        min-width: 92px;
+      }
+
+      .field.radius-field {
+        min-width: 96px;
+      }
+
+      .field.location-search {
+        min-width: 156px;
+      }
+
       .primary-button,
       .secondary-button {
         min-width: 0;
@@ -766,24 +856,24 @@
         </div>
 
         <div class="filters" aria-label="絞り込み">
-          <div class="field">
+          <div class="field genre-field">
             <label for="genreFilter">ジャンル</label>
             <select id="genreFilter">
               <option value="">すべて</option>
             </select>
           </div>
 
-          <div class="field">
+          <div class="field date-field">
             <label for="dateFilter">判定日</label>
             <input id="dateFilter" type="date">
           </div>
 
-          <div class="field">
+          <div class="field time-field">
             <label for="timeFilter">判定時刻</label>
             <input id="timeFilter" type="time">
           </div>
 
-          <div class="field">
+          <div class="field radius-field">
             <label for="radiusFilter">距離</label>
             <select id="radiusFilter">
               <option value="3">3km以内</option>
