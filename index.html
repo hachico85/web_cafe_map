@@ -652,12 +652,52 @@
       background: rgba(255, 255, 255, 0.82);
     }
 
-    .custom-marker.unvisited {
-      background: var(--tomato);
+    .map-legend {
+      margin: 0 12px 12px 0;
+      padding: 10px 12px;
+      border: 1px solid rgba(32, 33, 31, 0.14);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 251, 0.92);
+      box-shadow: 0 10px 28px rgba(32, 33, 31, 0.12);
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.35;
+      backdrop-filter: blur(12px);
+      max-width: 210px;
     }
 
-    .custom-marker.visited {
-      background: var(--gold);
+    .map-legend-title {
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .map-legend-items {
+      display: grid;
+      gap: 6px;
+    }
+
+    .map-legend-item {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .map-legend-swatch {
+      width: 12px;
+      height: 12px;
+      border: 2px solid #fff;
+      border-radius: 999px;
+      box-shadow: 0 0 0 1px rgba(32, 33, 31, 0.12);
+      flex: 0 0 auto;
+    }
+
+    .map-legend-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .current-location-marker {
@@ -964,6 +1004,7 @@
 
     const state = {
       map: null,
+      legendControl: null,
       currentMarker: null,
       markers: [],
       places: [],
@@ -1115,8 +1156,24 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(state.map);
 
+      initLegendControl();
       elements.mapEmpty.hidden = true;
       requestAnimationFrame(() => state.map.invalidateSize());
+    }
+
+    function initLegendControl() {
+      if (state.legendControl || !state.map) {
+        return;
+      }
+      state.legendControl = L.control({ position: "bottomright" });
+      state.legendControl.onAdd = () => {
+        const container = L.DomUtil.create("div", "map-legend");
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
+        container.innerHTML = '<div class="map-legend-title">ジャンル</div><div class="map-legend-items"></div>';
+        return container;
+      };
+      state.legendControl.addTo(state.map);
     }
 
     function locateUser() {
@@ -1421,6 +1478,7 @@
         });
 
       renderMarkers(filtered);
+      renderLegend(filtered);
       renderPlaceList(filtered.slice(0, 5));
       elements.matchCount.textContent = `${filtered.length}件`;
       elements.summaryNote.textContent = state.userPosition
@@ -1480,7 +1538,7 @@
       state.markers = places.map((place) => {
         const marker = L.marker([place.lat, place.lng], {
           title: place.name,
-          icon: markerIcon(place.visited)
+          icon: markerIcon(place.genre)
         }).addTo(state.map);
         marker.bindPopup(infoHtml(place));
         marker.on("mouseover", () => marker.openPopup());
@@ -1489,14 +1547,53 @@
       });
     }
 
-    function markerIcon(visited) {
+    function markerIcon(genre) {
       return L.divIcon({
         className: "",
-        html: `<div class="custom-marker ${visited ? "visited" : "unvisited"}"></div>`,
+        html: `<div class="custom-marker" style="background:${genreColor(genre)}"></div>`,
         iconSize: [28, 28],
         iconAnchor: [14, 28],
         popupAnchor: [0, -28]
       });
+    }
+
+    function renderLegend(places) {
+      const items = document.querySelector(".map-legend-items");
+      if (!items) {
+        return;
+      }
+      const genres = [...new Set(places.map((place) => place.genre).filter(Boolean))].sort(compareGenres);
+      items.innerHTML = genres.length
+        ? genres.map((genre) => `
+          <div class="map-legend-item">
+            <span class="map-legend-swatch" style="background:${genreColor(genre)}"></span>
+            <span class="map-legend-label">${escapeHtml(genre)}</span>
+          </div>
+        `).join("")
+        : '<div class="map-legend-label">該当なし</div>';
+    }
+
+    function genreColor(genre) {
+      const fixed = {
+        "カフェ": "#2f80ed",
+        "イタリアン": "#d64f3b",
+        "フレンチ": "#7b61ff",
+        "和食": "#2f855a",
+        "中華": "#e09f1f",
+        "エスニック": "#c05621",
+        "レンタルルーム": "#2c7a7b",
+        "その他": "#6e746c",
+        "未分類": "#6e746c"
+      };
+      if (fixed[genre]) {
+        return fixed[genre];
+      }
+      const palette = ["#2f80ed", "#d64f3b", "#2f855a", "#7b61ff", "#e09f1f", "#2c7a7b", "#c05621", "#805ad5"];
+      let hash = 0;
+      for (const char of String(genre || "")) {
+        hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+      }
+      return palette[hash % palette.length];
     }
 
     function infoHtml(place) {
@@ -1517,7 +1614,7 @@
         elements.placeList.innerHTML = `
           <article class="place">
             <h2>該当するお店がありません</h2>
-            <p class="place-memo">フィルター、営業時間、スプレッドシートの公開設定を確認してください。</p>
+            <p class="place-memo">データは読み込めています。営業中のみ、距離、ジャンル、検索地点の条件をゆるめてください。</p>
           </article>
         `;
         return;
