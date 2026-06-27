@@ -86,7 +86,7 @@
 
     .brand h1 {
       margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
+      font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, sans-serif;
       font-size: clamp(22px, 2.4vw, 30px);
       font-weight: 700;
       line-height: 1;
@@ -98,6 +98,7 @@
       gap: 8px;
       align-items: end;
       justify-content: flex-end;
+      min-width: 0;
       overflow-x: auto;
       padding-bottom: 2px;
       scrollbar-width: none;
@@ -111,6 +112,7 @@
     .field {
       display: grid;
       gap: 3px;
+      flex: 0 0 auto;
       min-width: 104px;
     }
 
@@ -140,6 +142,7 @@
 
     .field input,
     .field select {
+      width: 100%;
       height: 34px;
       border: 1px solid var(--line);
       border-radius: 999px;
@@ -157,6 +160,7 @@
     }
 
     .toggle {
+      flex: 0 0 auto;
       min-height: 34px;
       display: inline-flex;
       align-items: center;
@@ -168,17 +172,25 @@
       cursor: pointer;
       user-select: none;
       font-size: 14px;
+      white-space: nowrap;
     }
 
     .toggle input {
+      flex: 0 0 auto;
       width: 15px;
       height: 15px;
       accent-color: var(--leaf);
     }
 
+    .toggle span {
+      line-height: 1;
+      white-space: nowrap;
+    }
+
     .icon-button,
     .primary-button,
     .secondary-button {
+      flex: 0 0 auto;
       height: 34px;
       border: 1px solid transparent;
       border-radius: 999px;
@@ -289,8 +301,8 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel);
-      padding: 14px;
-      box-shadow: 0 10px 28px rgba(32, 33, 31, 0.08);
+      padding: 12px 13px;
+      box-shadow: 0 6px 18px rgba(32, 33, 31, 0.06);
     }
 
     .summary .label {
@@ -301,8 +313,9 @@
 
     .summary .value {
       margin-top: 4px;
-      font-size: 28px;
-      font-family: Georgia, "Times New Roman", serif;
+      font-size: 26px;
+      font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, sans-serif;
+      font-weight: 700;
       line-height: 1;
     }
 
@@ -316,24 +329,25 @@
     .places {
       display: grid;
       align-content: start;
-      gap: 10px;
+      gap: 7px;
       overflow: auto;
       padding-right: 2px;
     }
 
     .place {
-      border: 1px solid var(--line);
+      border: 1px solid rgba(216, 221, 212, 0.82);
       border-radius: var(--radius);
-      background: var(--panel);
-      padding: 13px;
+      background: rgba(255, 255, 251, 0.86);
+      padding: 10px 11px;
       display: grid;
-      gap: 9px;
-      box-shadow: 0 9px 24px rgba(32, 33, 31, 0.07);
+      gap: 7px;
+      box-shadow: none;
       cursor: pointer;
     }
 
     .place:hover {
       border-color: rgba(36, 107, 74, 0.45);
+      background: #fffffb;
     }
 
     .place-head {
@@ -345,29 +359,29 @@
 
     .place h2 {
       margin: 0;
-      font-size: 16px;
-      line-height: 1.35;
+      font-size: 15px;
+      line-height: 1.3;
     }
 
     .distance {
       color: var(--blue);
       font-weight: 800;
-      font-size: 13px;
+      font-size: 12px;
       white-space: nowrap;
     }
 
     .chips {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 5px;
     }
 
     .chip {
       border-radius: 999px;
-      padding: 4px 8px;
+      padding: 3px 7px;
       background: #f0f4ee;
       color: var(--leaf);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
     }
 
@@ -380,8 +394,8 @@
     .place-memo {
       margin: 0;
       color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
+      font-size: 12px;
+      line-height: 1.45;
     }
 
     .rating-stars {
@@ -701,12 +715,21 @@
     }
 
     .current-location-marker {
-      width: 22px;
-      height: 22px;
-      border: 4px solid #fff;
+      width: 30px;
+      height: 30px;
+      border: 5px solid #fff;
       border-radius: 999px;
       background: var(--blue);
-      box-shadow: 0 0 0 8px rgba(53, 107, 140, 0.18), 0 8px 18px rgba(32, 33, 31, 0.24);
+      box-shadow: 0 0 0 8px rgba(53, 107, 140, 0.16), 0 0 0 14px rgba(53, 107, 140, 0.08), 0 8px 18px rgba(32, 33, 31, 0.24);
+      position: relative;
+    }
+
+    .current-location-marker::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border-radius: 999px;
+      background: #fff;
     }
 
     .info-window h3 {
@@ -904,8 +927,8 @@
             <label for="radiusFilter">距離</label>
             <select id="radiusFilter">
               <option value="3">3km以内</option>
-              <option value="5">5km以内</option>
-              <option value="10" selected>10km以内</option>
+              <option value="5" selected>5km以内</option>
+              <option value="10">10km以内</option>
               <option value="">すべて</option>
             </select>
           </div>
@@ -999,7 +1022,7 @@
     const TEMPLATE_SHEET_COPY_URL = "https://docs.google.com/spreadsheets/d/1Nom2VVA60XmEZ3jXH9psGn3X_MX6nX-NiZXpOtazSKE/copy";
     const STORAGE_KEY = "personal-food-map-settings";
     const DEFAULT_CENTER = { lat: 35.6284713, lng: 139.7387599 };
-    const DEFAULT_RADIUS_KM = 10;
+    const DEFAULT_RADIUS_KM = 5;
     const WEEK_KEYS = ["日", "月", "火", "水", "木", "金", "土"];
 
     const state = {
@@ -1010,6 +1033,9 @@
       places: [],
       userPosition: DEFAULT_CENTER,
       centerLabel: "品川",
+      suppressMapMoveUpdate: false,
+      defaultDate: "",
+      defaultTime: "",
       settings: {
         sheetUrl: DEFAULT_SHEET_URL,
         gid: "0"
@@ -1157,9 +1183,25 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(state.map);
 
+      state.map.on("moveend", handleMapMoveEnd);
       initLegendControl();
       elements.mapEmpty.hidden = true;
       requestAnimationFrame(() => state.map.invalidateSize());
+    }
+
+    function handleMapMoveEnd() {
+      if (state.suppressMapMoveUpdate || !state.map) {
+        return;
+      }
+
+      const center = state.map.getCenter();
+      state.userPosition = {
+        lat: center.lat,
+        lng: center.lng
+      };
+      state.centerLabel = "地図の中心";
+      renderCurrentMarker();
+      applyFilters();
     }
 
     function initLegendControl() {
@@ -1217,10 +1259,22 @@
       });
     }
 
-    function centerMap(position) {
+    function centerMap(position, zoom = state.map?.getZoom() || 15) {
       if (state.map && position) {
-        state.map.setView([position.lat, position.lng], state.map.getZoom() || 15);
+        moveMapTo(position, zoom);
       }
+    }
+
+    function moveMapTo(position, zoom) {
+      if (!state.map || !position) {
+        return;
+      }
+
+      state.suppressMapMoveUpdate = true;
+      state.map.setView([position.lat, position.lng], zoom, { animate: false });
+      requestAnimationFrame(() => {
+        state.suppressMapMoveUpdate = false;
+      });
     }
 
     function renderCurrentMarker() {
@@ -1237,8 +1291,8 @@
         icon: L.divIcon({
           className: "",
           html: '<div class="current-location-marker"></div>',
-          iconSize: [22, 22],
-          iconAnchor: [11, 11]
+          iconSize: [30, 30],
+          iconAnchor: [15, 15]
         })
       }).addTo(state.map).bindPopup(state.centerLabel);
     }
@@ -1259,10 +1313,7 @@
           lng: Number(result.lon)
         };
         state.centerLabel = result.display_name ? `検索地点: ${query}` : query;
-        centerMap(state.userPosition);
-        if (state.map) {
-          state.map.setZoom(Math.max(state.map.getZoom(), 15));
-        }
+        centerMap(state.userPosition, Math.max(state.map?.getZoom() || 15, 15));
         renderCurrentMarker();
         applyFilters();
         setStatus(`「${query}」周辺を中心に表示しています。`);
@@ -1643,7 +1694,7 @@
           if (!state.map) {
             return;
           }
-          state.map.setView([place.lat, place.lng], Math.max(state.map.getZoom(), 16));
+          moveMapTo(place, Math.max(state.map.getZoom(), 16));
           const match = state.markers.find((item) => item.place.name === place.name);
           if (match) {
             match.marker.openPopup();
@@ -1689,8 +1740,10 @@
     }
 
     function setDefaultTime() {
-      elements.dateFilter.value = currentDateString();
-      elements.timeFilter.value = currentTimeString();
+      state.defaultDate = currentDateString();
+      state.defaultTime = currentTimeString();
+      elements.dateFilter.value = state.defaultDate;
+      elements.timeFilter.value = state.defaultTime;
     }
 
     function currentDateString() {
