@@ -58,7 +58,7 @@
     .app {
       min-height: 100%;
       display: grid;
-      grid-template-rows: auto minmax(560px, 1fr) auto;
+      grid-template-rows: auto minmax(560px, 1fr);
     }
 
     .topbar {
@@ -405,67 +405,8 @@
       letter-spacing: 0;
     }
 
-    .settings {
-      border-top: 1px solid var(--line);
-      background: rgba(255, 255, 251, 0.9);
-    }
-
     .is-hidden {
       display: none !important;
-    }
-
-    .template-guide {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 18px 18px 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) max-content;
-      gap: 16px;
-      align-items: start;
-    }
-
-    .template-guide p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-      max-width: 920px;
-    }
-
-    .settings-inner {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 12px 18px;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      align-items: end;
-    }
-
-    .settings .field {
-      min-width: 0;
-    }
-
-    .settings-actions {
-      display: flex;
-      gap: 10px;
-      align-items: end;
-      justify-content: flex-end;
-      white-space: nowrap;
-    }
-
-    .status {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 0 18px 12px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
-    }
-
-    .status.error {
-      color: var(--tomato);
-      font-weight: 700;
     }
 
     .info-window {
@@ -777,14 +718,6 @@
         overflow: visible;
       }
 
-      .settings-inner {
-        grid-template-columns: minmax(0, 1fr) 120px;
-      }
-
-      .settings-actions {
-        grid-column: 1 / -1;
-        justify-content: flex-start;
-      }
     }
 
     @media (max-width: 680px) {
@@ -793,10 +726,7 @@
       }
 
       .topbar-inner,
-      .main,
-      .template-guide,
-      .settings-inner,
-      .status {
+      .main {
         padding-left: 12px;
         padding-right: 12px;
       }
@@ -881,19 +811,6 @@
         grid-template-columns: 1fr;
       }
 
-      .settings-inner {
-        grid-template-columns: 1fr;
-      }
-
-      .template-guide {
-        grid-template-columns: 1fr;
-      }
-
-      .settings-actions {
-        display: grid;
-        grid-template-columns: 1fr;
-        width: 100%;
-      }
     }
   </style>
 </head>
@@ -968,8 +885,8 @@
         <div id="map"></div>
         <div id="mapEmpty" class="map-empty">
           <div>
-            <strong>下の設定から地図を読み込みます</strong>
-            <p>公開済みスプレッドシートURLを保存してください。保存後、この場所に品川中心のマップが表示されます。</p>
+            <strong>地図を読み込んでいます</strong>
+            <p>公開済みスプレッドシートの店舗データを読み込み、品川中心のマップを表示します。</p>
           </div>
         </div>
       </section>
@@ -984,43 +901,12 @@
       </aside>
     </main>
 
-    <footer class="settings">
-      <div class="template-guide is-hidden">
-        <p>サンプルスプレッドシートをコピーし、公開設定にしたURLを貼ってください。公開設定にする必要がありますので、スプレッドシートに個人情報などは記載しないでください。</p>
-        <button id="copyTemplateButton" class="secondary-button" type="button">
-          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
-          サンプルスプシをコピー
-        </button>
-      </div>
-      <div class="settings-inner">
-        <div class="field is-hidden">
-          <label for="sheetUrlInput">公開スプレッドシートURL</label>
-          <input id="sheetUrlInput" type="url" placeholder="https://docs.google.com/spreadsheets/d/...">
-        </div>
-        <div class="field is-hidden">
-          <label for="gidInput">シートID</label>
-          <input id="gidInput" type="text" inputmode="numeric" placeholder="通常は0">
-        </div>
-        <div class="settings-actions">
-          <button id="saveSettingsButton" class="primary-button is-hidden" type="button">
-            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
-            保存して読み込み
-          </button>
-          <button id="openSheetButton" class="secondary-button" type="button">
-            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>
-            スプシを開く
-          </button>
-        </div>
-      </div>
-      <div id="status" class="status is-hidden">スプレッドシートは公開閲覧できる状態にしてください。1行目の列名は要件定義の列名に合わせます。</div>
-    </footer>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
     const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1Nom2VVA60XmEZ3jXH9psGn3X_MX6nX-NiZXpOtazSKE/edit?gid=0#gid=0";
-    const TEMPLATE_SHEET_COPY_URL = "https://docs.google.com/spreadsheets/d/1Nom2VVA60XmEZ3jXH9psGn3X_MX6nX-NiZXpOtazSKE/copy";
-    const STORAGE_KEY = "personal-food-map-settings";
+    const DEFAULT_SHEET_GID = "0";
     const DEFAULT_CENTER = { lat: 35.6284713, lng: 139.7387599 };
     const DEFAULT_RADIUS_KM = 5;
     const WEEK_KEYS = ["日", "月", "火", "水", "木", "金", "土"];
@@ -1035,11 +921,7 @@
       centerLabel: "品川",
       suppressMapMoveUpdate: false,
       defaultDate: "",
-      defaultTime: "",
-      settings: {
-        sheetUrl: DEFAULT_SHEET_URL,
-        gid: "0"
-      }
+      defaultTime: ""
     };
 
     const elements = {
@@ -1056,29 +938,15 @@
       reloadButton: document.getElementById("reloadButton"),
       matchCount: document.getElementById("matchCount"),
       summaryNote: document.getElementById("summaryNote"),
-      placeList: document.getElementById("placeList"),
-      sheetUrlInput: document.getElementById("sheetUrlInput"),
-      gidInput: document.getElementById("gidInput"),
-      copyTemplateButton: document.getElementById("copyTemplateButton"),
-      saveSettingsButton: document.getElementById("saveSettingsButton"),
-      openSheetButton: document.getElementById("openSheetButton"),
-      status: document.getElementById("status")
+      placeList: document.getElementById("placeList")
     };
 
     boot();
 
     function boot() {
-      loadSettings();
       setDefaultTime();
       bindEvents();
-      renderSettings();
-
-      if (state.settings.sheetUrl) {
-        startApp();
-      } else {
-        initMap();
-        setStatus("スプレッドシートURLを入力して保存すると、店舗データを読み込みます。");
-      }
+      startApp();
     }
 
     function bindEvents() {
@@ -1097,58 +965,6 @@
       });
       elements.locateButton.addEventListener("click", locateUser);
       elements.reloadButton.addEventListener("click", loadSheetData);
-      elements.copyTemplateButton.addEventListener("click", openTemplateCopy);
-      elements.saveSettingsButton.addEventListener("click", saveSettingsFromForm);
-      elements.openSheetButton.addEventListener("click", openSheet);
-    }
-
-    function loadSettings() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-        state.settings = {
-          sheetUrl: saved.sheetUrl || DEFAULT_SHEET_URL,
-          gid: normalizeSheetId(saved.gid, saved.sheetUrl || DEFAULT_SHEET_URL)
-        };
-      } catch {
-        state.settings.sheetUrl = DEFAULT_SHEET_URL;
-        state.settings.gid = "0";
-      }
-    }
-
-    function renderSettings() {
-      elements.sheetUrlInput.value = state.settings.sheetUrl;
-      elements.gidInput.value = state.settings.gid;
-    }
-
-    function saveSettingsFromForm() {
-      const sheetUrl = elements.sheetUrlInput.value.trim();
-      state.settings = {
-        sheetUrl,
-        gid: normalizeSheetId(elements.gidInput.value, sheetUrl)
-      };
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.settings));
-      renderSettings();
-
-      if (!state.settings.sheetUrl) {
-        setStatus("公開スプレッドシートURLを入力してください。", true);
-        return;
-      }
-
-      startApp();
-    }
-
-    function openSheet() {
-      const sheetUrl = elements.sheetUrlInput.value.trim() || state.settings.sheetUrl;
-      if (!sheetUrl) {
-        setStatus("公開スプレッドシートURLを入力してください。", true);
-        return;
-      }
-      window.open(sheetUrl, "_blank", "noopener,noreferrer");
-    }
-
-    function openTemplateCopy() {
-      window.open(TEMPLATE_SHEET_COPY_URL, "_blank", "noopener,noreferrer");
     }
 
     async function startApp() {
@@ -1349,15 +1165,10 @@
     }
 
     async function loadSheetData() {
-      if (!state.settings.sheetUrl) {
-        setStatus("スプレッドシートURLを設定してください。", true);
-        return;
-      }
-
       setStatus("スプレッドシートを読み込んでいます。");
 
       try {
-        const table = await loadSheetTable(state.settings.sheetUrl, state.settings.gid);
+        const table = await loadSheetTable(DEFAULT_SHEET_URL, DEFAULT_SHEET_GID);
         state.places = normalizeRows(table);
 
         populateGenres();
@@ -1782,8 +1593,9 @@
     }
 
     function setStatus(message, isError = false) {
-      elements.status.textContent = message;
-      elements.status.classList.toggle("error", isError);
+      if (isError) {
+        elements.summaryNote.textContent = message;
+      }
     }
 
     function sheetReadErrorMessage() {
