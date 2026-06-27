@@ -1253,22 +1253,39 @@
           lat,
           lng,
           genre: String(values["ジャンル"] || "").trim() || "未分類",
-          weekdays: {
-            "月": isTruthy(values["月"]),
-            "火": isTruthy(values["火"]),
-            "水": isTruthy(values["水"]),
-            "木": isTruthy(values["木"]),
-            "金": isTruthy(values["金"]),
-            "土": isTruthy(values["土"]),
-            "日": isTruthy(values["日"])
-          },
-          openTime: formatTimeValue(values["開店時間"]),
-          closeTime: formatTimeValue(values["閉店時間"]),
+          hours: buildBusinessHours(values),
           memo: String(values["メモ"] || "").trim(),
           rating: String(values["おすすめ度"] || "").trim(),
           visited: isTruthy(values["訪問済み"])
         };
       }).filter(Boolean);
+    }
+
+    function buildBusinessHours(values) {
+      const fallbackOpen = parseTimeValue(values["開店時間"]);
+      const fallbackClose = parseTimeValue(values["閉店時間"]);
+
+      return WEEK_KEYS.reduce((hours, dayKey) => {
+        const ranges = parseBusinessHours(values[`${dayKey}営業時間`]);
+        if (ranges.length) {
+          hours[dayKey] = ranges;
+          return hours;
+        }
+
+        const open = parseTimeValue(values[`${dayKey}開店`]);
+        const close = parseTimeValue(values[`${dayKey}閉店`]);
+
+        if (open && close) {
+          hours[dayKey] = [{ open, close }];
+          return hours;
+        }
+
+        if (isTruthy(values[dayKey]) && fallbackOpen && fallbackClose) {
+          hours[dayKey] = [{ open: fallbackOpen, close: fallbackClose }];
+        }
+
+        return hours;
+      }, {});
     }
 
     function cellValue(cell) {
@@ -1287,7 +1304,23 @@
       return ["1", "true", "yes", "y", "○", "◯"].includes(normalized);
     }
 
-    function formatTimeValue(value) {
+    function parseBusinessHours(value) {
+      return String(value ?? "")
+        .split(/[,、，]/)
+        .map((range) => range.trim())
+        .map((range) => {
+          const parts = range.split(/\s*[-ー〜～]\s*/);
+          if (parts.length !== 2) {
+            return null;
+          }
+          const open = parseTimeValue(parts[0]);
+          const close = parseTimeValue(parts[1]);
+          return open && close ? { open, close } : null;
+        })
+        .filter(Boolean);
+    }
+
+    function parseTimeValue(value) {
       const raw = String(value ?? "").trim();
       const match = raw.match(/(\d{1,2}):(\d{2})/);
       if (!match) {
@@ -1330,6 +1363,8 @@
         .filter((place) => !openOnly || isOpenAt(place, selectedDayKey, time))
         .map((place) => ({
           ...place,
+          displayDayKey: selectedDayKey,
+          displayHours: hoursForDay(place, selectedDayKey),
           distanceKm: state.userPosition ? distanceKm(state.userPosition, place) : null
         }))
         .filter((place) => radiusKm === null || place.distanceKm === null || place.distanceKm <= radiusKm)
@@ -1363,24 +1398,37 @@
     }
 
     function isOpenAt(place, dayKey, time) {
-      if (!place.weekdays[dayKey]) {
-        return false;
-      }
-      if (!place.openTime || !place.closeTime || !time) {
+      const ranges = hoursForDay(place, dayKey);
+      if (!ranges.length || !time) {
         return false;
       }
 
       const current = timeToMinutes(time);
-      const open = timeToMinutes(place.openTime);
-      const close = timeToMinutes(place.closeTime);
-
-      if (Number.isNaN(current) || Number.isNaN(open) || Number.isNaN(close)) {
+      if (Number.isNaN(current)) {
         return false;
       }
 
-      if (close < open) {
-        return current >= open || current <= close;
+      return ranges.some((range) => isTimeInRange(current, range));
+    }
+
+    function hoursForDay(place, dayKey) {
+      return place.hours?.[dayKey] || [];
+    }
+
+    function isTimeInRange(current, range) {
+      const open = timeToMinutes(range.open);
+      const close = timeToMinutes(range.close);
+
+      if (Number.isNaN(open) || Number.isNaN(close)) {
+        return false;
       }
+
+      if (close >= 1440 || close < open) {
+        const adjustedCurrent = current < open ? current + 1440 : current;
+        const adjustedClose = close < open ? close + 1440 : close;
+        return adjustedCurrent >= open && adjustedCurrent <= adjustedClose;
+      }
+
       return current >= open && current <= close;
     }
 
@@ -1389,7 +1437,12 @@
       if (!match) {
         return Number.NaN;
       }
-      return Number(match[1]) * 60 + Number(match[2]);
+      const hours = Number(match[1]);
+      const minutes = Number(match[2]);
+      if (minutes > 59) {
+        return Number.NaN;
+      }
+      return hours * 60 + minutes;
     }
 
     function renderMarkers(places) {
@@ -1515,10 +1568,16 @@
     }
 
     function timeRange(place) {
-      if (!place.openTime || !place.closeTime) {
-        return "営業時間未設定";
+      const dayKey = place.displayDayKey || selectedDateKey();
+      const ranges = place.displayHours || hoursForDay(place, dayKey);
+      if (!ranges.length) {
+        return `${dayKey}は休み`;
       }
-      return `${place.openTime}-${place.closeTime}`;
+      return `${dayKey} ${ranges.map((range) => `${range.open}-${range.close}`).join(", ")}`;
+    }
+
+    function selectedDateKey() {
+      return WEEK_KEYS[parseDateInput(elements.dateFilter.value).getDay()];
     }
 
     function ratingStars(value) {
